@@ -1,10 +1,12 @@
-cmake_minimum_required(VERSION 3.30)
-project(gimpsep-gomp)
+cmake_minimum_required(VERSION 3.20)
+project(Gomp)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(OpenCV REQUIRED)
 
-add_executable(gimpsep-gomp main.cpp)
+file(GLOB SOURCES "*.cpp")
 
-target_link_libraries(gimpsep-gomp ${OpenCV_LIBS})
+add_executable(Gomp ${SOURCES})
+
+target_link_libraries(Gomp PRIVATE ${OpenCV_LIBS})
