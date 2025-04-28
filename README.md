@@ -13,8 +13,8 @@ Project uml diagram:
                                 | + applyOperation() |
                                 | + displayImage()   |
                                 +--------------------+
-                                          |
-                                          v
+                                           |
+                                           v
                                   +----------------+
                                   |   Operation    |  <<abstract>>
                                   +----------------+
