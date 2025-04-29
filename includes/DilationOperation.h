@@ -4,11 +4,13 @@
 
 #ifndef DILATIONOPERATION_H
 #define DILATIONOPERATION_H
+#include "Operation.h"
+#include <opencv2/opencv.hpp>
 
 
-
-class DilationOperation {
-
+class DilationOperation final : public Operation {
+public:
+    void apply(Mat& image) override;
 };
 
 

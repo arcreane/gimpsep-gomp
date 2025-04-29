@@ -7,7 +7,7 @@
 #include "Operation.h"
 #include <opencv2/opencv.hpp>
 
-class LightenDarkenOperation : public Operation {
+class LightenDarkenOperation final: public Operation {
 public:
     void apply(Mat& image) override;
 };
