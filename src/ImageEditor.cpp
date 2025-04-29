@@ -9,10 +9,6 @@
 using namespace std;
 using namespace cv;
 
-ImageEditor::ImageEditor() = default;
-
-ImageEditor::~ImageEditor() = default;
-
 bool ImageEditor::loadImage(const std::string &filepath) {
     const Mat image = imread(filepath, IMREAD_COLOR);
     if (image.empty()) {
