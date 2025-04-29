@@ -20,14 +20,14 @@ void CannyEdgeOperation::apply(Mat& image) {
     while (!(cin >> lowThreshold)) {
         cout << "Invalid input. Please enter a numeric value for low threshold: ";
         cin.clear();
+        cin.ignore();
     }
     cout << "Enter the high threshold for Canny edge detection: ";
     while (!(cin >> highThreshold)) {
         cout << "Invalid input. Please enter a numeric value for high threshold: ";
         cin.clear();
+        cin.ignore();
     }
 
-    Mat edges;
-    Canny(image, edges, lowThreshold, highThreshold);
-    image = edges;
+    Canny(image, image, lowThreshold, highThreshold);
 }
