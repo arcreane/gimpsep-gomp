@@ -25,6 +25,5 @@ Project uml diagram:
 +--------------+ +------------+ +------------+ +------------------+ +-------------+
 | DilationOp   | | ErosionOp  | | ResizeOp    | | LightenDarkenOp | | CannyEdgeOp |
 +--------------+ +------------+ +-------------+ +-----------------+ +-------------+
-| +kernelSize  | | +kernelSize| | +fx, +fy    | | +factor         | | +thresholds |
 | +apply()     | | +apply()   | | +apply()    | | +apply()        | | +apply()    |
 +--------------+ +------------+ +-------------+ +-----------------+ +-------------+
