@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
                 operation = make_shared<ErosionOperation>();
             break;
             case 3:
-                cout << "Not implemented yet" << endl;
+                operation = make_shared<ResizeOperation>();
             break;
             case 4:
                 operation = make_shared<LightenDarkenOperation>();
@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
                 cout << "Not implemented yet" << endl;
             break;
             case 6:
-                cout << "Not implemented yet" << endl;
+                operation = make_shared<CannyEdgeOperation>();
             break;
             case 7:
                 editor.displayImage("Current Image");
