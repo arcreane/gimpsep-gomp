@@ -4,11 +4,12 @@
 
 #ifndef RESIZEOPERATION_H
 #define RESIZEOPERATION_H
+#include "Operation.h"
 
 
-
-class ResizeOperation {
-
+class ResizeOperation: public Operation{
+public:
+    void apply(Mat& image) override;
 };
 
 
