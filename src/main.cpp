@@ -1,3 +1,6 @@
+//
+// Created by hippolyte on 31/03/25.
+//
 #include "ImageEditor.h"
 #include "DilationOperation.h"
 #include "ErosionOperation.h"
