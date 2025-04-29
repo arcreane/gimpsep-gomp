@@ -13,8 +13,6 @@ class ImageEditor {
     private:
         cv::Mat currentImage;
     public:
-        ImageEditor();
-        ~ImageEditor();
         bool loadImage(const std::string& filepath);
         [[nodiscard]] bool saveImage(const std::string& filepath) const;
         void applyOperation(std::shared_ptr<Operation> operation);

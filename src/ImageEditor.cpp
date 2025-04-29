@@ -6,6 +6,9 @@
 #include "Operation.h"
 #include <filesystem>
 
+using namespace std;
+using namespace cv;
+
 ImageEditor::ImageEditor() = default;
 
 ImageEditor::~ImageEditor() = default;
@@ -49,6 +52,6 @@ void ImageEditor::displayImage(const std::string& windowName) const {
         std::cerr << "No image loaded" << std::endl;
         return;
     }
-    cv::imshow(windowName, currentImage);
-    cv::waitKey(0);
+    imshow(windowName, currentImage);
+    waitKey(0);
 }
