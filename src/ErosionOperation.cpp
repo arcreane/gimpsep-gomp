@@ -14,6 +14,7 @@ void ErosionOperation::apply(Mat &image) {
     while (!(cin >> erosionSize) || erosionSize < 0) {
         cout << "Invalid input. Please enter a positive integer for erosion size: ";
         cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
 
     const Mat element = getStructuringElement(MORPH_RECT,

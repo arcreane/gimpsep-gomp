@@ -50,6 +50,7 @@ int main(int argc, char** argv) {
             break;
             case 2:
                 operation = make_shared<ErosionOperation>();
+            break;
             case 3:
                 cout << "Not implemented yet" << endl;
             break;

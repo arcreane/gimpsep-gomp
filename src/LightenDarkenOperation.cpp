@@ -31,6 +31,4 @@ void LightenDarkenOperation::apply(Mat &image) {
             }
         }
     }
-    image;
-
 }
