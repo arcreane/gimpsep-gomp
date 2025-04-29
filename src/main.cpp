@@ -34,7 +34,6 @@ int main(int argc, char** argv) {
     cout << "Successfully loaded image: " << imagePath << endl;
 
     do {
-        system("cls");
         cout << "Choose an operation:\n1. Dilation\n2. Erosion\n3. Resize\n4. Lighten\n5. Darken\n6. Canny Edge Detection"
                      "\n7. Display image\n8. Save image\n9. Load new image\n0. Quit\nChoice: ";
         int choice;
