@@ -4,11 +4,12 @@
 
 #ifndef CANNYEDGEOPERATION_H
 #define CANNYEDGEOPERATION_H
+#include <Operation.h>
 
 
-
-class CannyEdgeOperation {
-
+class CannyEdgeOperation final: public Operation{
+public:
+    void apply(Mat& image) override;
 };
 
 

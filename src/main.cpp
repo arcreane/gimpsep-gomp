@@ -42,6 +42,9 @@ int main(int argc, char** argv) {
                 cout << "Not implemented yet" << endl;
             break;
             case 6:
+                operation = make_shared<CannyEdgeOperation>();
+            break;
+            case 7:
                 editor.displayImage("Current Image");
             break;
             case 7:
