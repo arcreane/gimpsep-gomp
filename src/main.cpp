@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
     do {
         cout << "Choose an operation:\n1. Dilation\n2. Erosion\n3. Resize\n4. Lighten\n5. Canny Edge Detection"
                      "\n6. Display image\n7. Save image\n8. Load new image"
-                     "\n9. Panorama sticher\n0. Quit\nChoice: ";
+                     "\n9. Panorama Stitcher\n0. Quit\nChoice: ";
         int choice;
         cin >> choice;
 
