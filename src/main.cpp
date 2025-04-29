@@ -7,7 +7,7 @@
 #include "ResizeOperation.h"
 #include "LightenDarkenOperation.h"
 #include "CannyEdgeOperation.h"
-#include "PanoramaSticher.h"
+#include "PanoramaStitcher.h"
 #include <iostream>
 #include <memory>
 #include <filesystem>
@@ -39,12 +39,9 @@ int main(int argc, char** argv) {
                 operation = make_shared<LightenDarkenOperation>();
             break;
             case 5:
-                cout << "Not implemented yet" << endl;
-            break;
-            case 6:
                 operation = make_shared<CannyEdgeOperation>();
             break;
-            case 7:
+            case 6:
                 editor.displayImage("Current Image");
             break;
             case 7:
@@ -60,7 +57,7 @@ int main(int argc, char** argv) {
                 }
             break;
             case 9:
-                operation = make_shared<PanoramaSticher>();
+                operation = make_shared<PanoramaStitcher>();
                 break;
             case 0:
                 cout << "Exiting the program." << endl;

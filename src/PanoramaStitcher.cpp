@@ -2,43 +2,43 @@
 // Created by victo on 29/04/2025.
 //
 
-#include "PanoramaSticher.h"
+#include "PanoramaStitcher.h"
 #include <filesystem>
 namespace fs = std::filesystem;
 
-PanoramaSticher::PanoramaSticher() {
-    int choice;
-    std::cout << "Enter 1 to input a folder or 2 to input image paths one by one: ";
-    std::cin >> choice;
+PanoramaStitcher::PanoramaStitcher() {
+    do {
+        int choice;
+        std::cout << "Enter 1 to input a folder or 2 to input image paths one by one: ";
+        std::cin >> choice;
+        if (choice == 1) {
+            std::string folderPath;
+            std::cout << "Enter the folder path containing images: ";
+            std::cin >> folderPath;
 
-    if (choice == 1) {
-        std::string folderPath;
-        std::cout << "Enter the folder path containing images: ";
-        std::cin >> folderPath;
-
-        for (const auto& entry : fs::directory_iterator(folderPath)) {
-            if (entry.is_regular_file()) {
-                if (std::string extension = entry.path().extension().string(); extension == ".jpg" || extension == ".png" || extension == ".bmp") {
-                    imagePaths.push_back(entry.path().string());
+            for (const auto& entry : fs::directory_iterator(folderPath)) {
+                if (entry.is_regular_file()) {
+                    if (std::string extension = entry.path().extension().string(); extension == ".jpg" || extension == ".png" || extension == ".bmp") {
+                        imagePaths.push_back(entry.path().string());
+                    }
                 }
             }
+        } else if (choice == 2) {
+            int n;
+            std::cout << "Enter number of images to stitch: ";
+            std::cin >> n;
+            for (int i = 0; i < n; ++i) {
+                std::string path;
+                std::cout << "Enter path for image " << (i + 1) << ": ";
+                std::cin >> path;
+                imagePaths.push_back(path);
+            }
         }
-    } else if (choice == 2) {
-        int n;
-        std::cout << "Enter number of images to stitch: ";
-        std::cin >> n;
-        for (int i = 0; i < n; ++i) {
-            std::string path;
-            std::cout << "Enter path for image " << (i + 1) << ": ";
-            std::cin >> path;
-            imagePaths.push_back(path);
-        }
-    } else {
-        std::cerr << "Invalid choice. Exiting." << std::endl;
-    }
+        cout << "You have entered " << imagePaths.size() << " images." << endl;
+    } while (imagePaths.empty());
 }
 
-void PanoramaSticher::apply(Mat& image) {
+void PanoramaStitcher::apply(Mat& image) {
     vector<Mat> images;
     for (const auto& path : imagePaths) {
         Mat img = imread(path, IMREAD_COLOR);
@@ -68,7 +68,7 @@ void PanoramaSticher::apply(Mat& image) {
     const Ptr<Stitcher> stitcher = Stitcher::create(Stitcher::PANORAMA);
     Mat stitchedImage;
 
-    if (Stitcher::Status status = stitcher->stitch(images, stitchedImage); status != Stitcher::OK) {
+    if (const Stitcher::Status status = stitcher->stitch(images, stitchedImage); status != Stitcher::OK) {
         cerr << "Error during stitching: " << static_cast<int>(status) << endl;
         switch (status) {
             case Stitcher::ERR_NEED_MORE_IMGS:

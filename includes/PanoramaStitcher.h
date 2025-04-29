@@ -10,11 +10,11 @@
 #include <string>
 
 
-class PanoramaSticher final: public Operation {
+class PanoramaStitcher final: public Operation {
 private:
   std::vector<std::string> imagePaths;
 public:
-  PanoramaSticher();
+  PanoramaStitcher();
   void apply(cv::Mat& image) override;
 };
 
