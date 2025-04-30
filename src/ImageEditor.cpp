@@ -25,7 +25,7 @@ bool ImageEditor::saveImage(const std::string &filepath) const {
         return false;
     }
 
-    std::string correctedFilepath = !filepath.empty() ? filepath : "images/output.png";
+    const std::string correctedFilepath = !filepath.empty() ? filepath : "images/output.png";
 
     if (!imwrite(correctedFilepath, currentImage)) {
         std::cerr << "Could not save the image at " << correctedFilepath << std::endl;
@@ -35,11 +35,7 @@ bool ImageEditor::saveImage(const std::string &filepath) const {
     return true;
 }
 
-void ImageEditor::applyOperation(std::shared_ptr<Operation> operation) {
-    if (currentImage.empty()) {
-        std::cerr << "No image loaded" << std::endl;
-        return;
-    }
+void ImageEditor::applyOperation(const std::shared_ptr<Operation>& operation) {
     operation->apply(currentImage);
 }
 
@@ -50,4 +46,5 @@ void ImageEditor::displayImage(const std::string& windowName) const {
     }
     imshow(windowName, currentImage);
     waitKey(0);
+    destroyAllWindows();
 }

@@ -15,7 +15,7 @@ class ImageEditor {
     public:
         bool loadImage(const std::string& filepath);
         [[nodiscard]] bool saveImage(const std::string& filepath) const;
-        void applyOperation(std::shared_ptr<Operation> operation);
+        void applyOperation(const std::shared_ptr<Operation>& operation);
         void displayImage(const std::string& windowName) const;
 };
 
