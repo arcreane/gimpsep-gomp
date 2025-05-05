@@ -7,8 +7,13 @@
 #include "Operation.h"
 
 
-class ResizeOperation: public Operation{
+class ResizeOperation final : public Operation{
+private:
+    double fx;
+    double fy;
 public:
+    explicit ResizeOperation(double fx, double fy);
+
     void apply(Mat& image) override;
 };
 

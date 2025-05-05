@@ -7,10 +7,14 @@
 #include "Operation.h"
 #include <opencv2/opencv.hpp>
 
+using namespace cv;
 
 class DilationOperation final : public Operation {
+private:
+    int kernelSize;
 public:
-    void apply(Mat& image) override;
+    explicit DilationOperation(int kSize);
+    void apply(Mat &image) override;
 };
 
 

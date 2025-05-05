@@ -1,23 +1,18 @@
-//
-// Created by victo on 29/04/2025.
-//
-
-#ifndef PANORAMASTICHER_H
-#define PANORAMASTICHER_H
+#ifndef PANORAMA_STITCHER_H
+#define PANORAMA_STITCHER_H
 
 #include "Operation.h"
 #include <vector>
 #include <string>
 
-
-class PanoramaStitcher final: public Operation {
+using namespace cv;
+class PanoramaStitcher final : public Operation {
 private:
   std::vector<std::string> imagePaths;
+
 public:
-  PanoramaStitcher();
-  void apply(cv::Mat& image) override;
+  explicit PanoramaStitcher(const std::vector<std::string>& paths);
+  void apply(Mat& image) override;
 };
 
-
-
-#endif //PANORAMASTICHER_H
+#endif // PANORAMA_STITCHER_H

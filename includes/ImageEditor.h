@@ -9,14 +9,20 @@
 #include <iostream>
 #include "Operation.h"
 
+using namespace cv;
+
 class ImageEditor {
-    private:
-        cv::Mat currentImage;
-    public:
-        bool loadImage(const std::string& filepath);
-        [[nodiscard]] bool saveImage(const std::string& filepath) const;
-        void applyOperation(const std::shared_ptr<Operation>& operation);
-        void displayImage(const std::string& windowName) const;
+private:
+    Mat currentImage;
+    Mat modifiedImage;
+public:
+    bool loadImage(const std::string& filepath);
+    [[nodiscard]] bool saveImage(const std::string& filepath) const;
+    void applyOperation(const std::shared_ptr<Operation>& operation);
+    void displayImage(const std::string& windowName) const;
+    void resetToOriginal();
+    [[nodiscard]] Mat getOriginalImage() const;
+    [[nodiscard]] Mat getResultImage() const;
 };
 
 

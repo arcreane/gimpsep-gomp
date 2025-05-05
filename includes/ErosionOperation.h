@@ -7,9 +7,13 @@
 #include <Operation.h>
 #include <opencv2/opencv.hpp>
 
+using namespace cv;
 
 class ErosionOperation final: public Operation{
+private:
+    int kernelSize;
 public:
+    explicit ErosionOperation(int kSize);
     void apply(Mat &image) override;
 };
 
