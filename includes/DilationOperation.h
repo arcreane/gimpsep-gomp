@@ -10,8 +10,7 @@
 using namespace cv;
 
 class DilationOperation final : public Operation {
-private:
-    int kernelSize;
+int kernelSize;
 public:
     explicit DilationOperation(int kSize);
     void apply(Mat &image) override;

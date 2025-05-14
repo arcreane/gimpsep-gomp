@@ -8,8 +8,7 @@
 #include <opencv2/opencv.hpp>
 
 class LightenDarkenOperation final: public Operation {
-private:
-    double factor;
+double factor;
 public:
     explicit LightenDarkenOperation(double f);
     void apply(Mat& image) override;

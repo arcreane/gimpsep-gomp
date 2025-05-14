@@ -8,11 +8,10 @@
 
 
 class CannyEdgeOperation final: public Operation{
-private:
+public:
     int lowThreshold;
     int highThreshold;
     int kernelSize;
-public:
     explicit CannyEdgeOperation(int low, int high, int kSize);
     void apply(Mat& image) override;
 };

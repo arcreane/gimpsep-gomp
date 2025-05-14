@@ -10,8 +10,7 @@
 using namespace cv;
 
 class ErosionOperation final: public Operation{
-private:
-    int kernelSize;
+int kernelSize;
 public:
     explicit ErosionOperation(int kSize);
     void apply(Mat &image) override;
