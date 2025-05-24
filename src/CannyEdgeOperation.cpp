@@ -1,7 +1,3 @@
-//
-// Created by victo on 28/04/2025.
-//
-
 #include "CannyEdgeOperation.h"
 #include <opencv2/opencv.hpp>
 #include <iostream>
@@ -9,25 +5,19 @@
 using namespace cv;
 using namespace std;
 
+CannyEdgeOperation::CannyEdgeOperation(const int low, const int high, const int kSize)
+    : lowThreshold(low), highThreshold(high), kernelSize(kSize) {}
+
 void CannyEdgeOperation::apply(Mat& image) {
-    if (image.empty()) {
-        cerr << "Could not open or find the image" << endl;
-        return;
+    Mat inputGray, edges;
+
+    if (image.channels() > 1) {
+        cvtColor(image, inputGray, COLOR_BGR2GRAY);
+    } else {
+        inputGray = image.clone();
     }
 
-    int lowThreshold, highThreshold;
-    cout << "Enter the low threshold for Canny edge detection: ";
-    while (!(cin >> lowThreshold)) {
-        cout << "Invalid input. Please enter a numeric value for low threshold: ";
-        cin.clear();
-        cin.ignore();
-    }
-    cout << "Enter the high threshold for Canny edge detection: ";
-    while (!(cin >> highThreshold)) {
-        cout << "Invalid input. Please enter a numeric value for high threshold: ";
-        cin.clear();
-        cin.ignore();
-    }
+    Canny(inputGray, edges, lowThreshold, highThreshold, kernelSize);
 
-    Canny(image, image, lowThreshold, highThreshold);
+    cvtColor(edges, image, COLOR_GRAY2BGR);
 }
