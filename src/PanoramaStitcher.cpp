@@ -1,7 +1,7 @@
-#include "PanoramaStitcher.h"
 #include <opencv2/stitching.hpp>
 #include <opencv2/opencv.hpp>
 #include <iostream>
+#include "PanoramaStitcher.h"
 
 using namespace cv;
 using namespace std;
@@ -9,7 +9,7 @@ using namespace std;
 PanoramaStitcher::PanoramaStitcher(const std::vector<std::string>& paths)
     : imagePaths(paths) {}
 
-void PanoramaStitcher::apply(cv::Mat& image) {
+void PanoramaStitcher::apply(Mat& image) {
     std::vector<Mat> images;
 
     for (const auto& path : imagePaths) {
@@ -29,8 +29,15 @@ void PanoramaStitcher::apply(cv::Mat& image) {
     const Ptr<Stitcher> stitcher = Stitcher::create(Stitcher::PANORAMA);
 
     if (const Stitcher::Status status = stitcher->stitch(images, pano); status != Stitcher::OK) {
-        cerr << "Stitching failed, error code: " << static_cast<int>(status) << endl;
+        cerr << "Stitching failed, error code: " << status << endl;
         return;
+    }
+
+    constexpr int maxWidth = 1920;
+    constexpr int maxHeight = 1080;
+    if (pano.cols > maxWidth || pano.rows > maxHeight) {
+        const double scale = std::min(static_cast<double>(maxWidth) / pano.cols, static_cast<double>(maxHeight) / pano.rows);
+        resize(pano, pano, Size(), scale, scale, INTER_LINEAR);
     }
 
     image = pano.clone();

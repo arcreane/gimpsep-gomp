@@ -7,8 +7,7 @@ class LightenDarkenOperation final: public Operation {
 public:
     void apply(Mat& image) override;
     explicit LightenDarkenOperation(double f);
-private:
-    double factor;
+double factor;
 };
 
 

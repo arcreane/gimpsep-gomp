@@ -12,7 +12,7 @@ using namespace std;
 class Operation {
     public:
       virtual void apply(Mat& image) = 0;
-      virtual ~Operation() {}
+      virtual ~Operation() = default;
 };
 
 #endif //OPERATION_H

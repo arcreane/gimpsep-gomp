@@ -9,8 +9,7 @@ class ErosionOperation final: public Operation{
 public:
     void apply(Mat &image) override;
     explicit ErosionOperation(int kSize);
-private:
-    int kernelSize;
+int kernelSize;
 };
 
 
