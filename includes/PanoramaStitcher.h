@@ -7,8 +7,7 @@
 
 using namespace cv;
 class PanoramaStitcher final : public Operation {
-private:
-  std::vector<std::string> imagePaths;
+std::vector<std::string> imagePaths;
 
 public:
   explicit PanoramaStitcher(const std::vector<std::string>& paths);

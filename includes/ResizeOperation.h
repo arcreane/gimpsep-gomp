@@ -4,9 +4,8 @@
 
 
 class ResizeOperation final : public Operation{
-private:
-    double fx;
-    double fy;
+double fx;
+double fy;
 public:
     explicit ResizeOperation(double fx, double fy);
 

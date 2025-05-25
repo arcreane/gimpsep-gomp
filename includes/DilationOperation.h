@@ -9,8 +9,7 @@ class DilationOperation final : public Operation {
 public:
     explicit DilationOperation(int kSize);
     void apply(Mat &image) override;
-private:
-    int kernelSize;
+int kernelSize;
 };
 
 
