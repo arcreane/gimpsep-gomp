@@ -28,12 +28,17 @@ ImageEditor editor;
 shared_ptr<Operation> currentOperation;
 bool showHelp = false;
 std::string initialWorkingDir;
+cv::Rect btnEdit, btnPanorama;
 
-void overlayInstructions(Mat& img) {
-    const vector<string> lines = showHelp ? vector<string>{
-        "[b] Brightness", "[e] Erosion", "[d] Dilation", "[r] Resize", "[c] Canny",
-        "[p] Panorama", "[s] Save", "[u] Undo", "[l] Lock", "[h] Toggle Help", "[ESC] Exit"
-    } : vector<string>{"[h] Toggle Help"};
+
+void overlayInstructions(Mat &img) {
+    const vector<string> lines = showHelp
+                                     ? vector<string>{
+                                         "[b] Brightness", "[e] Erosion", "[d] Dilation", "[r] Resize", "[c] Canny",
+                                         "[p] Panorama", "[s] Save", "[u] Undo", "[l] Lock", "[h] Toggle Help",
+                                         "[ESC] Exit"
+                                     }
+                                     : vector<string>{"[h] Toggle Help"};
 
     constexpr int padding = 10;
     constexpr int lineHeight = 20;
@@ -55,8 +60,8 @@ void overlayInstructions(Mat& img) {
 void update() {
     if (currentOperation) {
         const Mat base = editor.getLockedImage().empty()
-                   ? editor.getOriginalImage().clone()
-                   : editor.getLockedImage().clone();
+                             ? editor.getOriginalImage().clone()
+                             : editor.getLockedImage().clone();
 
         Mat working = base.clone();
         currentOperation->apply(working);
@@ -71,7 +76,7 @@ void update() {
 void setupBrightness() {
     destroyWindow("Image Editor");
     namedWindow("Image Editor", WINDOW_AUTOSIZE);
-    createTrackbar("Brightness", "Image Editor", &brightness, 200, [](int, void*) {
+    createTrackbar("Brightness", "Image Editor", &brightness, 200, [](int, void *) {
         currentOperation = make_shared<LightenDarkenOperation>(brightness - 100);
         update();
     });
@@ -82,7 +87,7 @@ void setupBrightness() {
 void setupErosion() {
     destroyWindow("Image Editor");
     namedWindow("Image Editor", WINDOW_AUTOSIZE);
-    createTrackbar("Erosion Size", "Image Editor", &erosionSize, 20, [](int, void*) {
+    createTrackbar("Erosion Size", "Image Editor", &erosionSize, 20, [](int, void *) {
         currentOperation = make_shared<ErosionOperation>(erosionSize);
         update();
     });
@@ -92,7 +97,7 @@ void setupErosion() {
 void setupDilation() {
     destroyWindow("Image Editor");
     namedWindow("Image Editor", WINDOW_AUTOSIZE);
-    createTrackbar("Dilation Size", "Image Editor", &dilationSize, 20, [](int, void*) {
+    createTrackbar("Dilation Size", "Image Editor", &dilationSize, 20, [](int, void *) {
         currentOperation = make_shared<DilationOperation>(dilationSize);
         update();
     });
@@ -102,7 +107,7 @@ void setupDilation() {
 void setupResize() {
     destroyWindow("Image Editor");
     namedWindow("Image Editor", WINDOW_AUTOSIZE);
-    createTrackbar("Resize %", "Image Editor", &resizeFactor, 300, [](int, void*) {
+    createTrackbar("Resize %", "Image Editor", &resizeFactor, 300, [](int, void *) {
         double scale = resizeFactor / 100.0;
         currentOperation = make_shared<ResizeOperation>(scale, scale);
         update();
@@ -114,11 +119,11 @@ void setupResize() {
 void setupCanny() {
     destroyWindow("Image Editor");
     namedWindow("Image Editor", WINDOW_AUTOSIZE);
-    createTrackbar("Canny Thresh1", "Image Editor", &cannyThreshold1, 255, [](int, void*) {
+    createTrackbar("Canny Thresh1", "Image Editor", &cannyThreshold1, 255, [](int, void *) {
         currentOperation = make_shared<CannyEdgeOperation>(cannyThreshold1, cannyThreshold2, 3);
         update();
     });
-    createTrackbar("Canny Thresh2", "Image Editor", &cannyThreshold2, 255, [](int, void*) {
+    createTrackbar("Canny Thresh2", "Image Editor", &cannyThreshold2, 255, [](int, void *) {
         currentOperation = make_shared<CannyEdgeOperation>(cannyThreshold1, cannyThreshold2, 3);
         update();
     });
@@ -126,7 +131,7 @@ void setupCanny() {
     update();
 }
 
-void setupPanorama(const vector<string>& paths) {
+void setupPanorama(const vector<string> &paths) {
     const auto panoramaStitcher = make_shared<PanoramaStitcher>(paths);
     Mat resultImage = editor.getResultImage();
     panoramaStitcher->apply(resultImage);
@@ -137,14 +142,82 @@ void setupPanorama(const vector<string>& paths) {
     imshow("Image Editor", display);
 }
 
+enum class StartupChoice { None, EditImage, Panorama };
+
+StartupChoice startupChoice = StartupChoice::None;
+
+void onMouseClick(int event, int x, int y, int, void *) {
+    if (event != EVENT_LBUTTONDOWN) return;
+
+    if (btnEdit.contains(Point(x, y)))
+        startupChoice = StartupChoice::EditImage;
+    else if (btnPanorama.contains(Point(x, y)))
+        startupChoice = StartupChoice::Panorama;
+}
+
+
+void showMainImageWithButtons(const cv::Mat& mainImage) {
+
+    int buttonHeight = 50;
+    int padding = 20;
+
+    int canvasWidth = std::max(mainImage.cols + 2 * padding, 400);
+    int canvasHeight = mainImage.rows + buttonHeight + 3 * padding;
+
+    Mat canvas(canvasHeight, canvasWidth, CV_8UC3, Scalar(0, 0, 0));
+
+    int x = (canvas.cols - mainImage.cols) / 2;
+    int y = padding;
+
+    mainImage.copyTo(canvas(Rect(x, y, mainImage.cols, mainImage.rows)));
+
+    int buttonWidth = 150;
+    int spacing = 30;
+
+    int yBtnTop = mainImage.rows + 2 * padding;
+    btnEdit = Rect((canvas.cols - 2 * buttonWidth - spacing) / 2, yBtnTop, buttonWidth, buttonHeight);
+    btnPanorama = Rect(btnEdit.x + buttonWidth + spacing, yBtnTop, buttonWidth, buttonHeight);
+
+
+    rectangle(canvas, btnEdit, Scalar(100, 200, 255), FILLED);
+    putText(canvas, "Edit Image", btnEdit.tl() + Point(20, 35), FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0, 0, 0), 2);
+
+    rectangle(canvas, btnPanorama, Scalar(100, 255, 150), FILLED);
+    putText(canvas, "Panorama", btnPanorama.tl() + Point(25, 35), FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0, 0, 0), 2);
+
+    namedWindow("Image Editor Menu");
+    setMouseCallback("Image Editor Menu", onMouseClick);
+    imshow("Image Editor Menu", canvas);
+}
+
+
 int main() {
     initialWorkingDir = std::filesystem::current_path().string();
 
-    char choice;
-    cout << "Choose mode: [e] Edit a single image, [p] Create a panorama: ";
-    cin >> choice;
+    cv::Mat gimpLogo = cv::imread("../images/image_gimp.png", cv::IMREAD_UNCHANGED);
+    if (gimpLogo.empty()) {
+        std::cerr << "Erreur : l'image ./images/gimp/gimp.png est introuvable ou invalide." << std::endl;
+        return -1;
+    }
 
-    if (choice == 'e') {
+    Mat smallLogo;
+    resize(gimpLogo, smallLogo, Size(), 0.4, 0.4);
+
+    showMainImageWithButtons(smallLogo);
+
+    while (startupChoice == StartupChoice::None) {
+        if (waitKey(30) == 27) {
+            destroyWindow("Image Editor Menu");
+            return 0;
+        }
+    }
+
+
+    destroyWindow("Image Editor Menu");
+
+
+
+    if (startupChoice == StartupChoice::EditImage) {
         if (std::string path = FileHelper::openFileDialog(); path.empty() || !editor.loadImage(path)) {
             cerr << "Failed to load image.\n";
             return -1;
@@ -155,8 +228,7 @@ int main() {
         Mat display = original.clone();
         overlayInstructions(display);
         imshow("Image Editor", display);
-
-    } else if (choice == 'p') {
+    } else if (startupChoice == StartupChoice::Panorama) {
         const std::vector<std::string> paths = FileHelper::openMultipleFilesDialog();
         if (paths.empty()) {
             cerr << "No files selected.\n";
@@ -180,11 +252,16 @@ int main() {
         const int key = waitKey(0);
         if (key == 27) break;
         switch (key) {
-            case 'b': setupBrightness(); break;
-            case 'e': setupErosion(); break;
-            case 'd': setupDilation(); break;
-            case 'r': setupResize(); break;
-            case 'c': setupCanny(); break;
+            case 'b': setupBrightness();
+                break;
+            case 'e': setupErosion();
+                break;
+            case 'd': setupDilation();
+                break;
+            case 'r': setupResize();
+                break;
+            case 'c': setupCanny();
+                break;
             case 's': {
                 std::filesystem::current_path(initialWorkingDir);
                 std::string savePath = FileHelper::saveFileDialog();
