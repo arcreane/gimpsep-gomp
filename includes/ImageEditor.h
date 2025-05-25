@@ -30,7 +30,3 @@ public:
 
 
 #endif //IMAGEEDITOR_H
-
-
-
-#endif //IMAGEEDITOR_H
