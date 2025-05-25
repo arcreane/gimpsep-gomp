@@ -1,24 +1,13 @@
-//
-// Created by victo on 28/04/2025.
-//
-
 #include "ErosionOperation.h"
 
-void ErosionOperation::apply(Mat &image) {
-    if ( image.empty() ) {
-        cerr << "Could not open or find the image" << endl;
-        return;
-    }
-    int erosionSize;
-    cout << "Enter the erosion size (positive integer): ";
-    while (!(cin >> erosionSize) || erosionSize < 0) {
-        cout << "Invalid input. Please enter a positive integer for erosion size: ";
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    }
+using namespace cv;
 
-    const Mat element = getStructuringElement(MORPH_RECT,
-                                         Size(2 * erosionSize + 1, 2 * erosionSize + 1),
-                                         Point(erosionSize, erosionSize));
-    erode(image, image, element);
+ErosionOperation::ErosionOperation(const int kSize) : kernelSize(kSize) {}
+
+void ErosionOperation::apply(Mat& image) {
+    Mat output;
+    const auto kernel = getStructuringElement(MORPH_RECT,
+                    Size(2 * kernelSize + 1, 2 * kernelSize + 1),
+                    Point(kernelSize, kernelSize));
+    erode(image, image, kernel);
 }

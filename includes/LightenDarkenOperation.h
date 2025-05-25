@@ -1,7 +1,3 @@
-//
-// Created by victo on 28/04/2025.
-//
-
 #ifndef LIGHTENDARKENOPERATION_H
 #define LIGHTENDARKENOPERATION_H
 #include "Operation.h"
@@ -10,6 +6,9 @@
 class LightenDarkenOperation final: public Operation {
 public:
     void apply(Mat& image) override;
+    explicit LightenDarkenOperation(double f);
+private:
+    double factor;
 };
 
 

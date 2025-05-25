@@ -1,7 +1,3 @@
-//
-// Created by victo on 28/04/2025.
-//
-
 #include "ImageEditor.h"
 #include "Operation.h"
 #include <filesystem>
@@ -16,18 +12,19 @@ bool ImageEditor::loadImage(const std::string &filepath) {
         return false;
     }
     currentImage = image;
+    modifiedImage = image.clone();
     return true;
 }
 
 bool ImageEditor::saveImage(const std::string &filepath) const {
-    if (currentImage.empty()) {
+    if (modifiedImage.empty()) {
         std::cerr << "No image loaded to save" << std::endl;
         return false;
     }
 
     const std::string correctedFilepath = !filepath.empty() ? filepath : "images/output.png";
 
-    if (!imwrite(correctedFilepath, currentImage)) {
+    if (!imwrite(correctedFilepath, modifiedImage)) {
         std::cerr << "Could not save the image at " << correctedFilepath << std::endl;
         return false;
     }
@@ -36,15 +33,27 @@ bool ImageEditor::saveImage(const std::string &filepath) const {
 }
 
 void ImageEditor::applyOperation(const std::shared_ptr<Operation>& operation) {
-    operation->apply(currentImage);
+    operation->apply(modifiedImage);
 }
 
 void ImageEditor::displayImage(const std::string& windowName) const {
-    if (currentImage.empty()) {
+    if (modifiedImage.empty()) {
         std::cerr << "No image loaded" << std::endl;
         return;
     }
-    imshow(windowName, currentImage);
+    imshow(windowName, modifiedImage);
     waitKey(0);
     destroyAllWindows();
+}
+
+void ImageEditor::resetToOriginal() {
+    modifiedImage = currentImage.clone();
+}
+
+Mat ImageEditor::getOriginalImage() const {
+    return currentImage.clone();
+}
+
+Mat ImageEditor::getResultImage() const {
+    return modifiedImage.clone();
 }
