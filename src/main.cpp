@@ -205,20 +205,6 @@ int main() {
 
     showMainImageWithButtons(smallLogo);
 
-    //
-    //
-    // Mat menu(300, 300, CV_8UC3, Scalar(70,55,39));
-    // rectangle(menu, Point(50, 50), Point(250, 100), Scalar(61, 47, 33), FILLED);
-    // putText(menu, "Edit Image", Point(80, 85), FONT_HERSHEY_DUPLEX, 0.7, Scalar(0, 0, 0), 2);
-    //
-    // rectangle(menu, Point(50, 150), Point(250, 200), Scalar(202,201,191 ), FILLED);
-    // putText(menu, "Create Panorama", Point(55, 185), FONT_HERSHEY_DUPLEX, 0.7, Scalar(0, 0, 0), 2);
-    //
-    // namedWindow("Start Menu");
-    // setMouseCallback("Start Menu", onMouseClick);
-    //
-    // imshow("Start Menu", menu);
-
     while (startupChoice == StartupChoice::None) {
         if (waitKey(30) == 27) {
             destroyWindow("Image Editor Menu");
