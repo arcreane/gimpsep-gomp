@@ -10,6 +10,11 @@ public:
     int kernelSize;
     explicit CannyEdgeOperation(int low, int high, int kSize);
     void apply(Mat& image) override;
+    explicit CannyEdgeOperation(int low, int high, int kSize);
+private:
+    int lowThreshold;
+    int highThreshold;
+    int kernelSize;
 };
 
 
