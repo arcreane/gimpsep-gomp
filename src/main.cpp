@@ -1,4 +1,9 @@
 #include <filesystem>
+#include <iostream>
+#include <memory>
+#include <vector>
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui.hpp>
 #include "ImageEditor.h"
 #include "DilationOperation.h"
 #include "ErosionOperation.h"
@@ -6,12 +11,7 @@
 #include "LightenDarkenOperation.h"
 #include "CannyEdgeOperation.h"
 #include "PanoramaStitcher.h"
-#include "FileHelper.h"
-#include <opencv2/opencv.hpp>
-#include <opencv2/highgui.hpp>
-#include <iostream>
-#include <memory>
-#include <vector>
+#include "tinyfiledialogs.h"
 
 using namespace std;
 using namespace cv;
@@ -30,30 +30,24 @@ bool showHelp = false;
 std::string initialWorkingDir;
 cv::Rect btnEdit, btnPanorama;
 
-
 void overlayInstructions(Mat &img) {
     const vector<string> lines = showHelp
-                                     ? vector<string>{
-                                         "[b] Brightness", "[e] Erosion", "[d] Dilation", "[r] Resize", "[c] Canny",
-                                         "[p] Panorama", "[s] Save", "[u] Undo", "[l] Lock", "[h] Toggle Help",
-                                         "[ESC] Exit"
-                                     }
-                                     : vector<string>{"[h] Toggle Help"};
+        ? vector<string>{
+            "[b] Brightness", "[e] Erosion", "[d] Dilation", "[r] Resize", "[c] Canny",
+            "[p] Panorama", "[s] Save", "[u] Undo", "[l] Lock", "[h] Toggle Help", "[ESC] Exit"
+        }
+        : vector<string>{"[h] Toggle Help"};
 
     constexpr int padding = 10;
     constexpr int lineHeight = 20;
     constexpr int width = 220;
     const int height = lineHeight * static_cast<int>(lines.size());
 
-    rectangle(img, Point(0, 0), Point(width, height + padding),
-              Scalar(255, 255, 255), FILLED);
-    addWeighted(img(Rect(0, 0, width, height + padding)),
-                0.7, img(Rect(0, 0, width, height + padding)), 0.3, 0,
-                img(Rect(0, 0, width, height + padding)));
+    rectangle(img, Point(0, 0), Point(width, height + padding), Scalar(255, 255, 255), FILLED);
+    addWeighted(img(Rect(0, 0, width, height + padding)), 0.7, img(Rect(0, 0, width, height + padding)), 0.3, 0, img(Rect(0, 0, width, height + padding)));
 
-    for (int i = 0; i < size(lines); ++i) {
-        putText(img, lines[i], Point(10, 20 + i * lineHeight),
-                FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 0), 1);
+    for (int i = 0; i < lines.size(); ++i) {
+        putText(img, lines[i], Point(10, 20 + i * lineHeight), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 0), 1);
     }
 }
 
@@ -155,9 +149,7 @@ void onMouseClick(int event, int x, int y, int, void *) {
         startupChoice = StartupChoice::Panorama;
 }
 
-
 void showMainImageWithButtons(const cv::Mat& mainImage) {
-
     int buttonHeight = 50;
     int padding = 20;
 
@@ -178,7 +170,6 @@ void showMainImageWithButtons(const cv::Mat& mainImage) {
     btnEdit = Rect((canvas.cols - 2 * buttonWidth - spacing) / 2, yBtnTop, buttonWidth, buttonHeight);
     btnPanorama = Rect(btnEdit.x + buttonWidth + spacing, yBtnTop, buttonWidth, buttonHeight);
 
-
     rectangle(canvas, btnEdit, Scalar(100, 200, 255), FILLED);
     putText(canvas, "Edit Image", btnEdit.tl() + Point(20, 35), FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0, 0, 0), 2);
 
@@ -189,7 +180,6 @@ void showMainImageWithButtons(const cv::Mat& mainImage) {
     setMouseCallback("Image Editor Menu", onMouseClick);
     imshow("Image Editor Menu", canvas);
 }
-
 
 int main() {
     initialWorkingDir = std::filesystem::current_path().string();
@@ -212,13 +202,13 @@ int main() {
         }
     }
 
-
     destroyWindow("Image Editor Menu");
 
-
-
     if (startupChoice == StartupChoice::EditImage) {
-        if (std::string path = FileHelper::openFileDialog(); path.empty() || !editor.loadImage(path)) {
+        const char* filterPatterns[] = { "*.png", "*.jpg", "*.jpeg", "*.bmp" };
+        const char* path = tinyfd_openFileDialog("Select an image", "", 4, filterPatterns, "Image files", 0);
+
+        if (!path || !editor.loadImage(path)) {
             cerr << "Failed to load image.\n";
             return -1;
         }
@@ -228,76 +218,66 @@ int main() {
         Mat display = original.clone();
         overlayInstructions(display);
         imshow("Image Editor", display);
+
     } else if (startupChoice == StartupChoice::Panorama) {
-        const std::vector<std::string> paths = FileHelper::openMultipleFilesDialog();
-        if (paths.empty()) {
+        const char* filterPatterns[] = { "*.png", "*.jpg", "*.jpeg", "*.bmp" };
+        const char* paths = tinyfd_openFileDialog("Select images", "", 4, filterPatterns, "Image files", 1);
+
+        if (!paths || strlen(paths) == 0) {
             cerr << "No files selected.\n";
             return -1;
         }
-        editor.loadImage(paths[0]);
 
+        vector<string> fileList;
+        stringstream ss(paths);
+        string token;
+        while (getline(ss, token, '|')) {
+            fileList.push_back(token);
+        }
+
+        editor.loadImage(fileList[0]);
         original = editor.getOriginalImage();
         namedWindow("Image Editor", WINDOW_AUTOSIZE);
         Mat display = original.clone();
         overlayInstructions(display);
         imshow("Image Editor", display);
 
-        setupPanorama(paths);
-    } else {
-        cerr << "Invalid option.\n";
-        return -1;
+        setupPanorama(fileList);
     }
 
     while (getWindowProperty("Image Editor", WND_PROP_VISIBLE) >= 1) {
-        const int key = waitKey(0);
+        int key = waitKey(0);
         if (key == 27) break;
         switch (key) {
-            case 'b': setupBrightness();
-                break;
-            case 'e': setupErosion();
-                break;
-            case 'd': setupDilation();
-                break;
-            case 'r': setupResize();
-                break;
-            case 'c': setupCanny();
-                break;
+            case 'b': setupBrightness(); break;
+            case 'e': setupErosion(); break;
+            case 'd': setupDilation(); break;
+            case 'r': setupResize(); break;
+            case 'c': setupCanny(); break;
             case 's': {
                 std::filesystem::current_path(initialWorkingDir);
-                std::string savePath = FileHelper::saveFileDialog();
-                if (savePath.empty()) {
-                    break;
-                }
+                const char* savePath = tinyfd_saveFileDialog("Save image as", "output.png", 0, nullptr, nullptr);
+                if (!savePath) break;
                 editor.saveImage(savePath);
                 break;
             }
-            case 'u': {
+            case 'u':
                 editor.undoLastOperation();
-                Mat restored = editor.getResultImage().clone();
-                overlayInstructions(restored);
-                imshow("Image Editor", restored);
+                update();
                 break;
-            }
             case 'l':
                 editor.setLockedImage(editor.getResultImage().clone());
                 break;
-            case 'o': {
+            case 'o':
                 editor.setLockedImage(Mat());
                 editor.resetToOriginal();
-                Mat restored = editor.getResultImage().clone();
-                overlayInstructions(restored);
-                imshow("Image Editor", restored);
+                update();
                 currentOperation.reset();
-                Mat resetView = editor.getResultImage().clone();
-                overlayInstructions(resetView);
-                imshow("Image Editor", resetView);
                 break;
-            }
             case 'h':
                 showHelp = !showHelp;
                 update();
                 break;
-            default: ;
         }
     }
 
