@@ -67,12 +67,14 @@ Mat PanoramaStitcher::cropBlackBorder(const Mat& image) {
         vector<int> height = heights[y];
         height.push_back(0);
         while (x <= cols) {
-            if (const int curHeight = (x < cols) ? height[x] : 0; s.empty() || curHeight >= height[s.top()]) {
+            int curHeight = (x < cols) ? height[x] : 0;
+            if (s.empty() || curHeight >= height[s.top()]) {
                 s.push(x++);
             } else {
-                const int top = s.top(); s.pop();
-                const int width = s.empty() ? x : x - s.top() - 1;
-                if (const int area = height[top] * width; area > maxArea) {
+                int top = s.top(); s.pop();
+                int width = s.empty() ? x : x - s.top() - 1;
+                int area = height[top] * width;
+                if (area > maxArea) {
                     maxArea = area;
                     x0 = s.empty() ? 0 : s.top() + 1;
                     y0 = y - height[top] + 1;
@@ -83,5 +85,13 @@ Mat PanoramaStitcher::cropBlackBorder(const Mat& image) {
         }
     }
 
+    if (w <= 0 || h <= 0 ||
+        x0 < 0 || y0 < 0 ||
+        x0 + w > image.cols || y0 + h > image.rows) {
+        std::cerr << "Invalid crop region. Returning original image.\n";
+        return image.clone();
+        }
+
     return image(Rect(x0, y0, w, h)).clone();
 }
+

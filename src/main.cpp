@@ -258,6 +258,11 @@ int main() {
                 filesystem::current_path(initialWorkingDir);
                 const char* savePath = tinyfd_saveFileDialog("Save image as", "output.png", 0, nullptr, nullptr);
                 if (!savePath) break;
+                if (std::string savePathStr(savePath); savePathStr.find('.') == std::string::npos) {
+                    savePathStr += ".jpg";
+                    editor.saveImage(savePathStr);
+                    break;
+                }
                 editor.saveImage(savePath);
                 break;
             }
