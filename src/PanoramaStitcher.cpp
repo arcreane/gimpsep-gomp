@@ -7,11 +7,11 @@
 using namespace cv;
 using namespace std;
 
-PanoramaStitcher::PanoramaStitcher(const std::vector<std::string>& paths)
+PanoramaStitcher::PanoramaStitcher(const vector<string>& paths)
     : imagePaths(paths) {}
 
 void PanoramaStitcher::apply(Mat& image) {
-    std::vector<Mat> images;
+    vector<Mat> images;
 
     for (const auto& path : imagePaths) {
         if (Mat img = imread(path); !img.empty()) {
@@ -37,22 +37,22 @@ void PanoramaStitcher::apply(Mat& image) {
     constexpr int maxWidth = 1920;
     constexpr int maxHeight = 1080;
     if (pano.cols > maxWidth || pano.rows > maxHeight) {
-        const double scale = std::min(static_cast<double>(maxWidth) / pano.cols, static_cast<double>(maxHeight) / pano.rows);
+        const double scale = min(static_cast<double>(maxWidth) / pano.cols, static_cast<double>(maxHeight) / pano.rows);
         resize(pano, pano, Size(), scale, scale, INTER_LINEAR);
     }
 
     image = cropBlackBorder(pano);
 }
 
-cv::Mat PanoramaStitcher::cropBlackBorder(const cv::Mat& image) {
-    cv::Mat gray, binary;
-    cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
-    cv::threshold(gray, binary, 10, 1, cv::THRESH_BINARY); // 1s and 0s
+Mat PanoramaStitcher::cropBlackBorder(const Mat& image) {
+    Mat gray, binary;
+    cvtColor(image, gray, COLOR_BGR2GRAY);
+    threshold(gray, binary, 10, 1, THRESH_BINARY);
 
-    int rows = binary.rows, cols = binary.cols;
-    std::vector<std::vector<int>> heights(rows, std::vector<int>(cols, 0));
+    const int rows = binary.rows;
+    const int cols = binary.cols;
+    vector<vector<int>> heights(rows, vector<int>(cols, 0));
 
-    // Build histogram height matrix
     for (int x = 0; x < cols; ++x) {
         heights[0][x] = binary.at<uchar>(0, x);
         for (int y = 1; y < rows; ++y) {
@@ -60,22 +60,19 @@ cv::Mat PanoramaStitcher::cropBlackBorder(const cv::Mat& image) {
         }
     }
 
-    // Find maximal rectangle using histogram scan per row
     int maxArea = 0, x0 = 0, y0 = 0, w = 0, h = 0;
     for (int y = 0; y < rows; ++y) {
-        std::stack<int> s;
+        stack<int> s;
         int x = 0;
-        std::vector<int> height = heights[y];
-        height.push_back(0); // Sentinel
+        vector<int> height = heights[y];
+        height.push_back(0);
         while (x <= cols) {
-            int curHeight = (x < cols) ? height[x] : 0;
-            if (s.empty() || curHeight >= height[s.top()]) {
+            if (const int curHeight = (x < cols) ? height[x] : 0; s.empty() || curHeight >= height[s.top()]) {
                 s.push(x++);
             } else {
-                int top = s.top(); s.pop();
-                int width = s.empty() ? x : x - s.top() - 1;
-                int area = height[top] * width;
-                if (area > maxArea) {
+                const int top = s.top(); s.pop();
+                const int width = s.empty() ? x : x - s.top() - 1;
+                if (const int area = height[top] * width; area > maxArea) {
                     maxArea = area;
                     x0 = s.empty() ? 0 : s.top() + 1;
                     y0 = y - height[top] + 1;
@@ -86,6 +83,5 @@ cv::Mat PanoramaStitcher::cropBlackBorder(const cv::Mat& image) {
         }
     }
 
-    std::cout << "Final tight crop rect: [" << x0 << ", " << y0 << "] - " << w << "x" << h << std::endl;
-    return image(cv::Rect(x0, y0, w, h)).clone();
+    return image(Rect(x0, y0, w, h)).clone();
 }
