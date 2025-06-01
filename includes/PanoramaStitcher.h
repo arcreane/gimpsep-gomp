@@ -12,6 +12,9 @@ std::vector<std::string> imagePaths;
 public:
   explicit PanoramaStitcher(const std::vector<std::string>& paths);
   void apply(Mat& image) override;
+
+private:
+  static Mat cropBlackBorder(const Mat& image);
 };
 
 #endif // PANORAMA_STITCHER_H

@@ -27,8 +27,8 @@ Mat original;
 ImageEditor editor;
 shared_ptr<Operation> currentOperation;
 bool showHelp = false;
-std::string initialWorkingDir;
-cv::Rect btnEdit, btnPanorama;
+string initialWorkingDir;
+Rect btnEdit, btnPanorama;
 
 void overlayInstructions(Mat &img) {
     const vector<string> lines = showHelp
@@ -149,11 +149,11 @@ void onMouseClick(int event, int x, int y, int, void *) {
         startupChoice = StartupChoice::Panorama;
 }
 
-void showMainImageWithButtons(const cv::Mat& mainImage) {
+void showMainImageWithButtons(const Mat& mainImage) {
     int buttonHeight = 50;
     int padding = 20;
 
-    int canvasWidth = std::max(mainImage.cols + 2 * padding, 400);
+    int canvasWidth = max(mainImage.cols + 2 * padding, 400);
     int canvasHeight = mainImage.rows + buttonHeight + 3 * padding;
 
     Mat canvas(canvasHeight, canvasWidth, CV_8UC3, Scalar(0, 0, 0));
@@ -182,11 +182,11 @@ void showMainImageWithButtons(const cv::Mat& mainImage) {
 }
 
 int main() {
-    initialWorkingDir = std::filesystem::current_path().string();
+    initialWorkingDir = filesystem::current_path().string();
 
-    cv::Mat gimpLogo = cv::imread("../images/image_gimp.png", cv::IMREAD_UNCHANGED);
+    Mat gimpLogo = imread("./images/image_gimp.png", IMREAD_UNCHANGED);
     if (gimpLogo.empty()) {
-        std::cerr << "Erreur : l'image ./images/gimp/gimp.png est introuvable ou invalide." << std::endl;
+        cerr << "Erreur : l'image ./images/gimp/gimp.png est introuvable ou invalide." << endl;
         return -1;
     }
 
@@ -255,7 +255,7 @@ int main() {
             case 'r': setupResize(); break;
             case 'c': setupCanny(); break;
             case 's': {
-                std::filesystem::current_path(initialWorkingDir);
+                filesystem::current_path(initialWorkingDir);
                 const char* savePath = tinyfd_saveFileDialog("Save image as", "output.png", 0, nullptr, nullptr);
                 if (!savePath) break;
                 editor.saveImage(savePath);
