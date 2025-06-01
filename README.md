@@ -7,11 +7,16 @@ Project uml diagram:
                                 |    ImageEditor     |
                                 +--------------------+
                                 | - currentImage     |
+                                | - originalImage    |
+                                | - resultImage      |
+                                | - lockedImage      |
                                 +--------------------+
                                 | + loadImage()      |
                                 | + saveImage()      |
                                 | + applyOperation() |
                                 | + displayImage()   |
+                                | + resetToOriginal()|
+                                | + getResultImage() |
                                 +--------------------+
                                            |
                                            v
@@ -20,10 +25,15 @@ Project uml diagram:
                                   +----------------+
                                   | + apply() = 0  |
                                   +----------------+
-                                          ^
-                                          |
-+--------------+ +------------+ +------------+ +------------------+ +-------------+
-| DilationOp   | | ErosionOp  | | ResizeOp    | | LightenDarkenOp | | CannyEdgeOp |
-+--------------+ +------------+ +-------------+ +-----------------+ +-------------+
-| +apply()     | | +apply()   | | +apply()    | | +apply()        | | +apply()    |
-+--------------+ +------------+ +-------------+ +-----------------+ +-------------+
+                                           ^
+                                           |
+                                +--------------------+    +------------------+    +------------------+    +-----------------------+    +------------------+    +----------------------+
+                                | DilationOperation  |    | ErosionOperation |    | ResizeOperation  |    | LightenDarkenOperation|    | CannyEdgeOperation|    | PanoramaStitcher     |
+                                +--------------------+    +------------------+    +------------------+    +-----------------------+    +------------------+    +----------------------+
+                                | - size             |    | - size           |    | - fx             |    | - delta               |    | - lowThreshold    |    | - imagePaths         |
+                                |                    |    |                  |    | - fy             |    |                       |    | - highThreshold   |    |                      |
+                                |                    |    |                  |    |                  |    |                       |    | - kernelSize      |    |                      |
+                                | + apply() override |    | + apply()        |    | + apply()        |    | + apply()             |    | + apply()         |    | + apply()            |
+                                +--------------------+    +------------------+    +------------------+    +-----------------------+    +-------------------+    +----------------------+
+                                                                                                                                       
+
